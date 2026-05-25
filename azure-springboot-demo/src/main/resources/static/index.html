@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Web App + Storage Demo (Spring Boot)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.8s ease-in-out;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            border-top: 5px solid #0078d4;
+        }
+        h1 {
+            color: #242424;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            background-color: #e1dfdd;
+            color: #323130;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        .data-box {
+            background-color: #f3f2f1;
+            border-left: 4px solid #107c41;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: left;
+            margin-top: 20px;
+        }
+        .data-box h3 {
+            margin: 0 0 8px 0;
+            color: #107c41;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-box p {
+            margin: 0;
+            color: #323130;
+            font-size: 16px;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .footer-note {
+            font-size: 11px;
+            color: #797775;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="app-title">Cargando aplicación...</h1>
+        <div id="app-status" class="status-badge">Consultando backend...</div>
+        
+        <div class="data-box">
+            <h3>Contenido del Storage Account:</h3>
+            <p id="storage-data">Obteniendo datos del archivo...</p>
+        </div>
+
+        <div class="footer-note">
+            Desplegado en Azure Web Apps • Backend Java Spring Boot
+        </div>
+    </div>
+
+    <script>
+        // Realizar la llamada asíncrona al API REST de Spring Boot
+        fetch('/api/datos-azure')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // CAMBIO VISUAL 1: Aplicar la variable de entorno 'COLOR_FONDO' al fondo de la página
+                if (data.color) {
+                    document.body.style.backgroundColor = data.color;
+                }
+                
+                // CAMBIO VISUAL 2: Modificar los textos con la información inyectada desde Azure
+                document.getElementById('storage-data').innerText = data.texto;
+                document.getElementById('app-status').innerText = data.status;
+                document.getElementById('app-title').innerText = "¡Aplicación Sincronizada!";
+                
+                // Cambiar el estilo del badge si está conectado exitosamente
+                if(data.status.includes("exitosamente")) {
+                    document.getElementById('app-status').style.backgroundColor = "#dff6dd";
+                    document.getElementById('app-status').style.color = "#107c41";
+                }
+            })
+            .catch(error => {
+                console.error("Error al obtener los datos:", error);
+                document.getElementById('app-title').innerText = "Error de Conexión";
+                document.getElementById('app-status').innerText = "Offline / Error";
+                document.getElementById('app-status').style.backgroundColor = "#fde7e9";
+                document.getElementById('app-status').style.color = "#a80000";
+                document.getElementById('storage-data').innerText = "No se pudieron recuperar los datos remotos.";
+            });
+    </script>
+</body>
+</html>

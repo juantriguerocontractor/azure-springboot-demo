@@ -1,0 +1,22 @@
+# Maven target
+target/
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.rar
+
+# IDEs and Editors
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+.DS_Store
+
+# Log files
+*.log
+
+# Crash dumps
+clear_dump.log
